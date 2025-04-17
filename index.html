@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bot Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 1rem;
+        }
+        .sidebar {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .strategy-list {
+            margin-top: 1rem;
+        }
+        .strategy-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .strategy-item:hover {
+            background-color: #f5f5f5;
+        }
+        .content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #1e3a8a;
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            height: 300px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .strategy-builder {
+            margin-top: 1.5rem;
+        }
+        .builder-section {
+            margin-bottom: 1.5rem;
+        }
+        .builder-section h3 {
+            margin-bottom: 0.5rem;
+        }
+        .drag-drop-area {
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+            min-height: 150px;
+            margin-bottom: 1rem;
+            background-color: #f9f9f9;
+        }
+        .indicator-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .indicator {
+            background-color: #e9ecef;
+            padding: 0.3rem 0.7rem;
+            border-radius: 16px;
+            cursor: grab;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #1e40af;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-card h4 {
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+        .transaction-list {
+            border-top: 1px solid #ddd;
+            margin-top: 1.5rem;
+        }
+        .transaction-item {
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .transaction-item.profit {
+            border-left: 3px solid green;
+            padding-left: 0.5rem;
+        }
+        .transaction-item.loss {
+            border-left: 3px solid red;
+            padding-left: 0.5rem;
+        }
+        .api-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .ai-tools {
+            margin-top: 1.5rem;
+        }
+        .ai-tool {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .ai-tool h4 {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .ai-tool h4 svg {
+            margin-right: 0.5rem;
+        }
+        .mt-2 {
+            margin-top: 1rem;
+        }
+        .flex {
+            display: flex;
+        }
+        .gap-4 {
+            gap: 1rem;
+        }
+        .btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .currency-group {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        .currency-group-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #1e3a8a;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Trading Bot Platform</div>
+        <nav>
+            <ul>
+                <li><a href="#dashboard">მთავარი</a></li>
+                <li><a href="#strategies">სტრატეგიები</a></li>
+                <li><a href="#api">API ინტეგრაცია</a></li>
+                <li><a href="#ai-tools">AI ანალიტიკა</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <div class="sidebar">
+                <h3>სტრატეგიები</h3>
+                <div class="strategy-list">
+                    <div class="strategy-item">საშუალო მოძრავი გადაკვეთა</div>
+                    <div class="strategy-item">RSI სტრატეგია</div>
+                    <div class="strategy-item">MACD სტრატეგია</div>
+                    <div class="strategy-item">Bollinger Bands</div>
+                </div>
+
+                <h3 class="mt-2">ბოტები</h3>
+                <div class="strategy-list">
+                    <!-- კრიპტო ბოტები -->
+                    <div class="currency-group">
+                        <div class="currency-group-title">კრიპტო</div>
+                        <div class="strategy-item">BTC/USD ბოტი</div>
+                        <div class="strategy-item">ETH/BTC ბოტი</div>
+                        <div class="strategy-item">XRP/BTC ბოტი</div>
+                        <div class="strategy-item">SOL/USD ბოტი</div>
+                    </div>
+                    
+                    <!-- ფორექს ბოტები -->
+                    <div class="currency-group">
+                        <div class="currency-group-title">ფორექსი</div>
+                        <div class="strategy-item">EUR/USD ბოტი</div>
+                        <div class="strategy-item">GBP/USD ბოტი</div>
+                        <div class="strategy-item">USD/JPY ბოტი</div>
+                        <div class="strategy-item">USD/CHF ბოტი</div>
+                        <div class="strategy-item">AUD/USD ბოტი</div>
+                        <div class="strategy-item">NZD/USD ბოტი</div>
+                        <div class="strategy-item">USD/CAD ბოტი</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="tabs">
+                    <div class="tab active">ბოტის შესრულება</div>
+                    <div class="tab">სტრატეგიის შექმნა</div>
+                    <div class="tab">ანგარიშის ინტეგრაცია</div>
+                    <div class="tab">AI ანალიტიკა</div>
+                </div>
+
+                <div class="tab-content active">
+                    <h2>BTC/USD ბოტის მონიტორინგი</h2>
+                    <div class="chart-container">
+                        <div>დააჭირეთ გრაფიკის განახლებას</div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>ბალანსი</h4>
+                            <p>1.45 BTC</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>მოგება/ზარალი</h4>
+                            <p>+5.3%</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>გახსნილი პოზიციები</h4>
+                            <p>3</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>წარმატებული გარიგებები</h4>
+                            <p>68%</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>საშუალო მოგება</h4>
+                            <p>2.1%</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>საშუალო ზარალი</h4>
+                            <p>0.8%</p>
+                        </div>
+                    </div>
+
+                    <div class="transaction-list">
+                        <h3>ბოლო გარიგებები</h3>
+                        <div class="transaction-item profit">
+                            <div>BTC/USD ყიდვა @ 42,150.00</div>
+                            <div>+2.3% (0.021 BTC)</div>
+                        </div>
+                        <div class="transaction-item loss">
+                            <div>ETH/BTC გაყიდვა @ 0.062</div>
+                            <div>-1.2% (0.005 BTC)</div>
+                        </div>
+                        <div class="transaction-item profit">
+                            <div>BTC/USD გაყიდვა @ 43,200.00</div>
+                            <div>+3.1% (0.031 BTC)</div>
+                        </div>
+                    </div>
+
+                    <div class="btns">
+                        <button class="btn btn-secondary">დაპაუზება</button>
+                        <button class="btn">გამორთვა</button>
+                    </div>
+                </div>
+
+                <div class="tab-content">
+                    <h2>სტრატეგიის შემქმნელი</h2>
+                    <div class="strategy-builder">
+                        <div class="builder-section">
+                            <h3>ინდიკატორები</h3>
+                            <div class="indicator-list">
+                                <div class="indicator">MACD</div>
+                                <div class="indicator">RSI</div>
+                                <div class="indicator">Bollinger Bands</div>
+                                <div class="indicator">Moving Average</div>
+                                <div class="indicator">Fibonacci</div>
+                                <div class="indicator">Volume</div>
+                            </div>
+
+                            <div class="drag-drop-area">
+                                <p>ჩააგდეთ ინდიკატორები აქ სტრატეგიის შესაქმნელად</p>
+                            </div>
+                        </div>
+
+                        <div class="builder-section">
+                            <h3>სტრატეგიის პარამეტრები</h3>
+                            <div class="form-group">
+                                <label>სტრატეგიის სახელი</label>
+                                <input type="text" placeholder="შეიყვანეთ სტრატეგიის სახელი">
+                            </div>
+                            <div class="form-group">
+                                <label>სავალუტო წყვილი</label>
+                                <select>
+                                    <optgroup label="კრიპტო">
+                                        <option>BTC/USD</option>
+                                        <option>ETH/BTC</option>
+                                        <option>XRP/BTC</option>
+                                        <option>SOL/USD</option>
+                                    </optgroup>
+                                    <optgroup label="ფორექსი">
+                                        <option>EUR/USD</option>
+                                        <option>GBP/USD</option>
+                                        <option>USD/JPY</option>
+                                        <option>USD/CHF</option>
+                                        <option>AUD/USD</option>
+                                        <option>NZD/USD</option>
+                                        <option>USD/CAD</option>
+                                        <option>EUR/GBP</option>
+                                        <option>EUR/JPY</option>
+                                        <option>GBP/JPY</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ვაჭრობის მოცულობა</label>
+                                <input type="number" placeholder="შეიყვანეთ მოცულობა">
+                            </div>
+                            <div class="form-group">
+                                <label>ვაჭრობის დრო</label>
+                                <select>
+                                    <option>24/7</option>
+                                    <option>მხოლოდ ბაზრის საათები</option>
+                                    <option>მორგებული გრაფიკი</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="builder-section">
+                            <h3>უკან ტესტირება</h3>
+                            <div class="flex gap-4">
+                                <div class="form-group">
+                                    <label>საწყისი თარიღი</label>
+                                    <input type="date">
+                                </div>
+                                <div class="form-group">
+                                    <label>საბოლოო თარიღი</label>
+                                    <input type="date">
+                                </div>
+                            </div>
+                            <button class="btn">გაუშვი უკან ტესტირება</button>
+                        </div>
+
+                        <div class="btns">
+                            <button class="btn btn-secondary">გასუფთავება</button>
+                            <button class="btn">შენახვა</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content">
+                    <h2>API ინტეგრაცია</h2>
+                    <div class="api-form">
+                        <div class="form-group">
+                            <label>ბირჟის არჩევა</label>
+                            <select>
+                                <optgroup label="კრიპტო ბირჟები">
+                                    <option>Binance</option>
+                                    <option>Coinbase</option>
+                                    <option>Kraken</option>
+                                    <option>Bitfinex</option>
+                                    <option>OKEx</option>
+                                </optgroup>
+                                <optgroup label="ფორექს ბროკერები">
+                                    <option>MetaTrader 4</option>
+                                    <option>MetaTrader 5</option>
+                                    <option>cTrader</option>
+                                    <option>OANDA</option>
+                                    <option>Interactive Brokers</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>API გასაღები</label>
+                            <input type="text" placeholder="შეიყვანეთ API გასაღები">
+                        </div>
+                        <div class="form-group">
+                            <label>API საიდუმლო</label>
+                            <input type="password" placeholder="შეიყვანეთ API საიდუმლო">
+                        </div>
+                        <div class="form-group">
+                            <label>წვდომის დონე</label>
+                            <select>
+                                <option>მხოლოდ წაკითხვა</option>
+                                <option>წაკითხვა და ვაჭრობა</option>
+                            </select>
+                        </div>
+                        <div class="btns">
+                            <button class="btn">დამატება</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content">
+                    <h2>AI ანალიტიკა და ინსტრუმენტები</h2>
+                    <div class="ai-tools">
+                        <div class="ai-tool">
+                            <h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                </svg>
+                                ბაზრის სენტიმენტის ანალიზი
+                            </h4>
+                            <p>ბაზარზე არსებული სიახლეებისა და სოციალური მედიის მონაცემების ანალიზი</p>
+                            <div class="form-group">
+                                <label>ინსტრუმენტის ტიპი</label>
+                                <select>
+                                    <option>კრიპტო</option>
+                                    <option>ფორექსი</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ვალუტის წყვილი</label>
+                                <select>
+                                    <option>BTC/USD</option>
+                                    <option>EUR/USD</option>
+                                    <option>GBP/USD</option>
+                                </select>
+                            </div>
+                            <div class="stat-card">
+                                <h4>BTC/USD სენტიმენტი</h4>
+                                <p style="color: green;">პოზიტიური (71%)</p>
+                            </div>
+                            <button class="btn mt-2">განახლება</button>
+                        </div>
+
+                        <div class="ai-tool">
+                            <h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                </svg>
+                                პროგნოზირების მოდელი
+                            </h4>
+                            <p>ფასების მოკლევადიანი და გრძელვადიანი პროგნოზები AI მოდელების საშუალებით</p>
+                            <div class="chart-container" style="height: 150px;">
+                                <div>პროგნოზირების გრაფიკი</div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="form-group">
+                                    <label>პროგნოზის პერიოდი</label>
+                                    <select>
+                                        <option>24 საათი</option>
+                                        <option>7 დღე</option>
+                                        <option>30 დღე</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>სავალუტო წყვილი</label>
+                                    <select>
+                                        <optgroup label="კრიპტო">
+                                            <option>BTC/USD</option>
+                                            <option>ETH/BTC</option>
+                                            <option>XRP/BTC</option>
+                                            <option>SOL/USD</option>
+                                        </optgroup>
+                                        <optgroup label="ფორექსი">
+                                            <option>EUR/USD</option>
+                                            <option>GBP/USD</option>
+                                            <option>USD/JPY</option>
+                                            <option>USD/CHF</option>
+                                            <option>AUD/USD</option>
+                                            <option>NZD/USD</option>
+                                            <option>USD/CAD</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn mt-2">პროგნოზის გენერირება</button>
+                        </div>
+
+                        <div class="ai-tool">
+                            <h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                                ავტომატური ოპტიმიზაცია
+                            </h4>
+                            <p>ბოტების პარამეტრების ავტომატური ოპტიმიზაცია მანქანური სწავლების საშუალებით</p>
+                            <div class="form-group">
+                                <label>სტრატეგიის არჩევა</label>
+                                <select>
+                                    <option>საშუალო მოძრავი გადაკვეთა</option>
+                                    <option>RSI სტრატეგია</option>
+                                    <option>MACD სტრატეგია</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ბაზრის ტიპი</label>
+                                <select>
+                                    <option>კრიპტო</option>
+                                    <option>ფორექსი</option>
+                                </select>
+                            </div>
+                            <button class="btn mt-2">ოპტიმიზაციის დაწყება</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Get index of clicked tab
+                const index = Array.from(tab.parentElement.children).indexOf(tab);
+                
+                // Show corresponding content
+                document.querySelectorAll('.tab-content')[index].classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
