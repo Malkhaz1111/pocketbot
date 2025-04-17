@@ -1,511 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketBot - Your Trading Assistant</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #0f172a;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .nav-link {
-            transition: all 0.3s ease;
-        }
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-left: 4px solid #3b82f6;
-        }
-        .card {
-            background-color: #1e293b;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-        .chart-container {
-            height: 300px;
-            width: 100%;
-        }
-        .status-dot {
-            height: 12px;
-            width: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        .status-active {
-            background-color: #10b981;
-            box-shadow: 0 0 8px #10b981;
-        }
-        .status-inactive {
-            background-color: #ef4444;
-            box-shadow: 0 0 8px #ef4444;
-        }
-        .status-warning {
-            background-color: #f59e0b;
-            box-shadow: 0 0 8px #f59e0b;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EUR/USD 1-Minute Prediction Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      text-align: center;
+      padding: 40px;
+    }
+    .box {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px auto;
+      width: 300px;
+    }
+    .up { color: limegreen; }
+    .down { color: tomato; }
+  </style>
 </head>
 <body>
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white p-5">
-            <div class="flex items-center mb-10">
-                <i class="fas fa-robot text-blue-500 text-3xl mr-3"></i>
-                <h1 class="text-2xl font-bold">PocketBot</h1>
-            </div>
-            
-            <nav>
-                <a href="#dashboard" class="nav-link active flex items-center p-3 mb-2 rounded">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
-                    <span>დაშბორდი</span>
-                </a>
-                <a href="#bots" class="nav-link flex items-center p-3 mb-2 rounded">
-                    <i class="fas fa-robot mr-3"></i>
-                    <span>ბოტები</span>
-                </a>
-                <a href="#market" class="nav-link flex items-center p-3 mb-2 rounded">
-                    <i class="fas fa-chart-line mr-3"></i>
-                    <span>ბაზარი</span>
-                </a>
-                <a href="#portfolio" class="nav-link flex items-center p-3 mb-2 rounded">
-                    <i class="fas fa-wallet mr-3"></i>
-                    <span>პორტფოლიო</span>
-                </a>
-                <a href="#settings" class="nav-link flex items-center p-3 mb-2 rounded">
-                    <i class="fas fa-cog mr-3"></i>
-                    <span>პარამეტრები</span>
-                </a>
-                <a href="#logs" class="nav-link flex items-center p-3 mb-2 rounded">
-                    <i class="fas fa-list-alt mr-3"></i>
-                    <span>ლოგები</span>
-                </a>
-            </nav>
-            
-            <div class="mt-auto pt-10">
-                <div class="p-4 bg-blue-900 rounded-lg">
-                    <h3 class="font-medium mb-2">ძირითადი სტატისტიკა</h3>
-                    <div class="flex justify-between mb-2">
-                        <span>აქტიური ბოტები:</span>
-                        <span class="font-bold">8</span>
-                    </div>
-                    <div class="flex justify-between mb-2">
-                        <span>ვაჭრობები დღეს:</span>
-                        <span class="font-bold">42</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>დღის მოგება:</span>
-                        <span class="font-bold text-green-400">+2.7%</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="flex-1 p-8 overflow-y-auto" id="content-area">
-            <!-- Dashboard Section -->
-            <div id="dashboard" class="section active">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold">დაშბორდი</h2>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-gray-400">გამარჯობა, გიორგი</span>
-                        <img src="/api/placeholder/40/40" alt="Profile" class="w-10 h-10 rounded-full">
-                    </div>
-                </div>
-                
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-2">
-                            <h3 class="text-gray-400">საერთო ბალანსი</h3>
-                            <div class="bg-blue-500 p-2 rounded-lg">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                        </div>
-                        <p class="text-2xl font-bold">$34,256.78</p>
-                        <p class="text-green-400 mt-2"><i class="fas fa-arrow-up mr-1"></i>+5.3% ბოლო თვის</p>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-2">
-                            <h3 class="text-gray-400">დღის მოგება</h3>
-                            <div class="bg-green-500 p-2 rounded-lg">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                        </div>
-                        <p class="text-2xl font-bold">$923.41</p>
-                        <p class="text-green-400 mt-2"><i class="fas fa-arrow-up mr-1"></i>+2.7% დღეს</p>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-2">
-                            <h3 class="text-gray-400">აქტიური ბოტები</h3>
-                            <div class="bg-purple-500 p-2 rounded-lg">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                        </div>
-                        <p class="text-2xl font-bold">8</p>
-                        <p class="text-gray-400 mt-2">12 ბოტიდან</p>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-2">
-                            <h3 class="text-gray-400">ვაჭრობები</h3>
-                            <div class="bg-yellow-500 p-2 rounded-lg">
-                                <i class="fas fa-exchange-alt"></i>
-                            </div>
-                        </div>
-                        <p class="text-2xl font-bold">42</p>
-                        <p class="text-green-400 mt-2"><i class="fas fa-arrow-up mr-1"></i>+12 დღეს</p>
-                    </div>
-                </div>
-                
-                <!-- Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="card p-6 lg:col-span-2">
-                        <h3 class="text-xl font-bold mb-4">პორტფოლიოს დინამიკა</h3>
-                        <div class="chart-container" id="portfolio-chart"></div>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-4">აქტივების განაწილება</h3>
-                        <div class="chart-container" id="assets-chart"></div>
-                    </div>
-                </div>
-                
-                <!-- Active Bots -->
-                <div class="card p-6 mb-8">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold">აქტიური ბოტები</h3>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                            <i class="fas fa-plus mr-2"></i>ახალი ბოტი
-                        </button>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr class="text-gray-400 border-b border-gray-700">
-                                    <th class="px-4 py-3 text-left">ბოტის სახელი</th>
-                                    <th class="px-4 py-3 text-left">სტრატეგია</th>
-                                    <th class="px-4 py-3 text-left">წყვილი</th>
-                                    <th class="px-4 py-3 text-left">მოგება</th>
-                                    <th class="px-4 py-3 text-left">სტატუსი</th>
-                                    <th class="px-4 py-3 text-left">მოქმედებები</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bot-table-body">
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">Momentum Trader</td>
-                                    <td class="px-4 py-3">Momentum</td>
-                                    <td class="px-4 py-3">BTC/USDT</td>
-                                    <td class="px-4 py-3 text-green-400">+3.2%</td>
-                                    <td class="px-4 py-3">
-                                        <span class="status-dot status-active"></span>აქტიური
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-pause"></i></button>
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-cog"></i></button>
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-chart-bar"></i></button>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">Grid Master</td>
-                                    <td class="px-4 py-3">Grid</td>
-                                    <td class="px-4 py-3">ETH/USDT</td>
-                                    <td class="px-4 py-3 text-green-400">+1.8%</td>
-                                    <td class="px-4 py-3">
-                                        <span class="status-dot status-active"></span>აქტიური
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-pause"></i></button>
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-cog"></i></button>
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-chart-bar"></i></button>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">DCA Pro</td>
-                                    <td class="px-4 py-3">DCA</td>
-                                    <td class="px-4 py-3">SOL/USDT</td>
-                                    <td class="px-4 py-3 text-red-400">-0.5%</td>
-                                    <td class="px-4 py-3">
-                                        <span class="status-dot status-warning"></span>შესრულებაში
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-pause"></i></button>
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-cog"></i></button>
-                                        <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-chart-bar"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-4 text-center">
-                        <a href="#bots" class="text-blue-400 hover:text-blue-300">ყველა ბოტის ნახვა <i class="fas fa-arrow-right ml-1"></i></a>
-                    </div>
-                </div>
-                
-                <!-- Recent Trades -->
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold mb-6">ბოლო ვაჭრობები</h3>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr class="text-gray-400 border-b border-gray-700">
-                                    <th class="px-4 py-3 text-left">დრო</th>
-                                    <th class="px-4 py-3 text-left">ბოტი</th>
-                                    <th class="px-4 py-3 text-left">წყვილი</th>
-                                    <th class="px-4 py-3 text-left">ტიპი</th>
-                                    <th class="px-4 py-3 text-left">მოცულობა</th>
-                                    <th class="px-4 py-3 text-left">ფასი</th>
-                                    <th class="px-4 py-3 text-left">მოგება</th>
-                                </tr>
-                            </thead>
-                            <tbody id="trades-table-body">
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">14:32:12</td>
-                                    <td class="px-4 py-3">Momentum Trader</td>
-                                    <td class="px-4 py-3">BTC/USDT</td>
-                                    <td class="px-4 py-3 text-green-400">შესყიდვა</td>
-                                    <td class="px-4 py-3">0.05 BTC</td>
-                                    <td class="px-4 py-3">$34,250.00</td>
-                                    <td class="px-4 py-3">-</td>
-                                </tr>
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">13:45:07</td>
-                                    <td class="px-4 py-3">Grid Master</td>
-                                    <td class="px-4 py-3">ETH/USDT</td>
-                                    <td class="px-4 py-3 text-red-400">გაყიდვა</td>
-                                    <td class="px-4 py-3">0.2 ETH</td>
-                                    <td class="px-4 py-3">$1,842.35</td>
-                                    <td class="px-4 py-3 text-green-400">+$12.86</td>
-                                </tr>
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">12:12:45</td>
-                                    <td class="px-4 py-3">DCA Pro</td>
-                                    <td class="px-4 py-3">SOL/USDT</td>
-                                    <td class="px-4 py-3 text-green-400">შესყიდვა</td>
-                                    <td class="px-4 py-3">5 SOL</td>
-                                    <td class="px-4 py-3">$106.78</td>
-                                    <td class="px-4 py-3">-</td>
-                                </tr>
-                                <tr class="border-b border-gray-800">
-                                    <td class="px-4 py-3">11:04:32</td>
-                                    <td class="px-4 py-3">Momentum Trader</td>
-                                    <td class="px-4 py-3">BTC/USDT</td>
-                                    <td class="px-4 py-3 text-red-400">გაყიდვა</td>
-                                    <td class="px-4 py-3">0.03 BTC</td>
-                                    <td class="px-4 py-3">$34,125.50</td>
-                                    <td class="px-4 py-3 text-green-400">+$42.37</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-4 text-center">
-                        <a href="#logs" class="text-blue-400 hover:text-blue-300">ყველა ვაჭრობის ნახვა <i class="fas fa-arrow-right ml-1"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Bots Section (Initially Hidden) -->
-            <div id="bots" class="section hidden">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold">ბოტები</h2>
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                        <i class="fas fa-plus mr-2"></i>ახალი ბოტი
-                    </button>
-                </div>
-                
-                <!-- Bot Categories -->
-                <div class="mb-6 flex space-x-4">
-                    <button class="bg-blue-700 text-white px-4 py-2 rounded">ყველა ბოტი</button>
-                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">აქტიური</button>
-                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">პაუზაზე</button>
-                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">შაბლონები</button>
-                </div>
-                
-                <!-- Bot Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Bot Card 1 -->
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-4">
-                            <h3 class="text-xl font-bold">Momentum Trader</h3>
-                            <span class="status-dot status-active"></span>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">სტრატეგია</p>
-                            <p>Momentum</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">წყვილი</p>
-                            <p>BTC/USDT</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ბოლო 24 სთ)</p>
-                            <p class="text-green-400">+3.2% ($127.45)</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ჯამური)</p>
-                            <p class="text-green-400">+12.7% ($487.32)</p>
-                        </div>
-                        <div class="flex justify-between mt-6">
-                            <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-pause mr-1"></i>პაუზა
-                            </button>
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-cog mr-1"></i>პარამეტრები
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Bot Card 2 -->
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-4">
-                            <h3 class="text-xl font-bold">Grid Master</h3>
-                            <span class="status-dot status-active"></span>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">სტრატეგია</p>
-                            <p>Grid</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">წყვილი</p>
-                            <p>ETH/USDT</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ბოლო 24 სთ)</p>
-                            <p class="text-green-400">+1.8% ($67.23)</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ჯამური)</p>
-                            <p class="text-green-400">+8.3% ($298.15)</p>
-                        </div>
-                        <div class="flex justify-between mt-6">
-                            <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-pause mr-1"></i>პაუზა
-                            </button>
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-cog mr-1"></i>პარამეტრები
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Bot Card 3 -->
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-4">
-                            <h3 class="text-xl font-bold">DCA Pro</h3>
-                            <span class="status-dot status-warning"></span>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">სტრატეგია</p>
-                            <p>DCA</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">წყვილი</p>
-                            <p>SOL/USDT</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ბოლო 24 სთ)</p>
-                            <p class="text-red-400">-0.5% (-$12.45)</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ჯამური)</p>
-                            <p class="text-green-400">+5.2% ($132.87)</p>
-                        </div>
-                        <div class="flex justify-between mt-6">
-                            <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-stop mr-1"></i>გაჩერება
-                            </button>
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-cog mr-1"></i>პარამეტრები
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Bot Card 4 -->
-                    <div class="card p-6">
-                        <div class="flex justify-between mb-4">
-                            <h3 class="text-xl font-bold">MACD Trader</h3>
-                            <span class="status-dot status-active"></span>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">სტრატეგია</p>
-                            <p>MACD</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">წყვილი</p>
-                            <p>ADA/USDT</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ბოლო 24 სთ)</p>
-                            <p class="text-green-400">+2.1% ($53.76)</p>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-gray-400 mb-1">მოგება (ჯამური)</p>
-                            <p class="text-green-400">+7.8% ($198.42)</p>
-                        </div>
-                        <div class="flex justify-between mt-6">
-                            <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-pause mr-1"></i>პაუზა
-                            </button>
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                <i class="fas fa-cog mr-1"></i>პარამეტრები
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Add Bot Card -->
-                    <div class="card p-6 flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
-                        <div class="text-6xl text-gray-500 mb-4">
-                            <i class="fas fa-plus-circle"></i>
-                        </div>
-                        <p class="text-xl font-bold mb-2">შექმენით ახალი ბოტი</p>
-                        <p class="text-gray-400 text-center mb-4">აირჩიეთ სტრატეგია და დააკონფიგურირეთ თქვენი საჭიროებისამებრ</p>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">
-                            დაწყება
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+  <h1>EUR/USD Prediction Test (1 Min)</h1>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <script>
-        // Initialize navigation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Nav links functionality
-            const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('.section');
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Remove active class from all links
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    
-                    // Add active class to clicked link
-                    this.classList.add('active');
-                    
-                    // Get the target section id
-                    const targetId = this.getAttribute('href').substring(1);
-                    
-                    // Hide all sections
-                    sections.forEach(section => {
-                        section.classList.add('hidden');
-                        section.classList.remove('active');
+  <div class="box">
+    <p><strong>Last Prices:</strong> <span id="prices">Loading...</span></p>
+    <p><strong>Prediction:</strong> <span id="prediction">-</span></p>
+    <p><strong>Actual Result:</strong> <span id="result">Waiting...</span></p>
+  </div>
+
+  <button onclick="runTest()">Run New Test</button>
+
+  <script>
+    // Mock price history (simulate last 3 minutes closing prices)
+    let prices = [
+      1.0850,
+      1.0853,
+      1.0857
+    ];
+
+    function getDirection(prices) {
+      const [a, b, c] = prices;
+      if (a < b && b < c) return "UP";
+      if (a > b && b > c) return "DOWN";
+      return "SIDEWAYS";
+    }
+
+    function runTest() {
+      // Display last prices
+      document.getElementById("prices").textContent = prices.join(", ");
+
+      // Make prediction
+      const prediction = getDirection(prices);
+      document.getElementById("prediction").textContent = prediction;
+      document.getElementById("prediction").className = prediction === "UP" ? "up" : prediction === "DOWN" ? "down" : "";
+
+      // Simulate actual movement (mocked randomly for now)
+      const lastPrice = prices[2];
+      const newPrice = (lastPrice + (Math.random() - 0.5) * 0.001).toFixed(5);
+      setTimeout(() => {
+        const result = newPrice > lastPrice ? "UP" : newPrice < lastPrice ? "DOWN" : "SIDEWAYS";
+        document.getElementById("result").textContent = `${result} (New Price: ${newPrice})`;
+        document.getElementById("result").className = result === "UP" ? "up" : result === "DOWN" ? "down" : "";
+        
+        // Optional: update prices for next round
+        prices.shift();
+        prices.push(parseFloat(newPrice));
+      }, 60000); // 60 seconds
+    }
+
+    runTest(); // Auto-start
+  </script>
+</body>
+</html>
